@@ -26,16 +26,22 @@ const Settings = (function(modalEl) {
     }
 
     function readSettingsFromModal() {
-        const N = parseInt(modalEl.querySelector('.amount-lines').value, 10)
         const selectedLineSize = modalEl.querySelector('.line-size:checked').value
         const shortLines = selectedLineSize === 'short_lines'
         const selectedMode = modalEl.querySelector('.draw-mode:checked').value
         const landscapeMode = selectedMode === 'landscape_mode'
+        const selectedNextLine = modalEl.querySelector('.next-line:checked').value
+        const maxErrorScore = {
+            gold: 0,
+            silver: 1,
+            bronze: 2,
+            always: 3
+        }[selectedNextLine]
         
         return {
-            N,
             shortLines,
-            landscapeMode
+            landscapeMode,
+            maxErrorScore
         }
     }
 
@@ -44,7 +50,7 @@ const Settings = (function(modalEl) {
     }
 
     function render(props) {
-        const { N, shortLines, landscapeMode } = props
+        const { shortLines, landscapeMode, maxErrorScore } = props
         const bestControlAvg = localStorage.getItem(STORAGE.BEST_CONTROL_AVG)
         const bestAccuracyAvg = localStorage.getItem(STORAGE.BEST_ACCURACY_AVG)
         return (`
@@ -52,20 +58,30 @@ const Settings = (function(modalEl) {
             <div class='modal-content'>
                 <h3>Settings</h3>
                 <div>
-                    <label>Amount of lines (between 20 and 40):</label>
-                    <input class='amount-lines' type='number' min="20" max="40" value="${N}"></input>
-                    <br>
-                    <label>Line size:</label>
+                    <label><u>Line size</u>:</label>
+                    <br><input class='line-size' type='radio' name='type_of_lines' value='short_lines' ${shortLines ? 'checked' : ''}>
                     <label>short</label>
-                    <input class='line-size' type='radio' name='type_of_lines' value='short_lines' ${shortLines ? 'checked' : ''}>
+                    <br><input class='line-size' type='radio' name='type_of_lines' value='long_lines' ${!shortLines ? 'checked' : ''}>
                     <label>long</label>
-                    <input class='line-size' type='radio' name='type_of_lines' value='long_lines' ${!shortLines ? 'checked' : ''}>
                     <br>
-                    <label>Paper orientation:</label>
+
+                    <label><u>Paper orientation</u>:</label>
+                    <br><input class='draw-mode' type='radio' name='draw_mode' value='normal_mode' ${!landscapeMode ? 'checked' : ''}>
                     <label>vertical</label>
-                    <input class='draw-mode' type='radio' name='draw_mode' value='normal_mode' ${!landscapeMode ? 'checked' : ''}>
+                    <br><input class='draw-mode' type='radio' name='draw_mode' value='landscape_mode' ${landscapeMode ? 'checked' : ''}>
                     <label>horizontal</label>
-                    <input class='draw-mode' type='radio' name='draw_mode' value='landscape_mode' ${landscapeMode ? 'checked' : ''}>
+                    <br>
+
+
+                    <label><u>Advance to next line</u>:</label>
+                    <br><input class='next-line' type='radio' name='next_line' value='always' ${maxErrorScore === 3 ? 'checked' : ''}>
+                    <label>always</label>
+                    <br><input class='next-line' type='radio' name='next_line' value='bronze' ${maxErrorScore === 2 ? 'checked' : ''}>
+                    <label>after bronze</label>
+                    <br><input class='next-line' type='radio' name='next_line' value='silver' ${maxErrorScore === 1 ? 'checked' : ''}>
+                    <label>after silver</label>
+                    <br><input class='next-line' type='radio' name='next_line' value='gold' ${maxErrorScore === 0 ? 'checked' : ''}>
+                    <label>after gold</label>
                 </div>
 
                 <div style='display: flex; justify-content: flex-end; margin-top: 16px;'>

@@ -171,6 +171,7 @@ const Draw = (function() {
         drawStar,
         drawAttempt,
         drawSummary,
-        drawRetryButton
+        drawRetryButton,
+        getAttemptErrorScore
     }
 })()

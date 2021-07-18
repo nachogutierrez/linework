@@ -134,7 +134,8 @@ const Main = (function() {
      *      helps make this Promise cancellable.
      */
     async function drawingLoop(bindings, observables, opts = {}, onCancel) {
-        const { N, M, innerOffset, shortLines, landscapeMode } = opts
+        const { N, M, innerOffset, shortLines, landscapeMode, maxErrorScore } = opts
+        const { getAttemptErrorScore } = Draw
 
         let keepRunning = true
         onCancel(() => {
@@ -152,7 +153,8 @@ const Main = (function() {
         const canvas = Canvas(bindings.canvas)
         const jump = Math.floor((bindings.canvas.height - 2*M - 2 * innerOffset) / (N - 1))
         const attempts = []
-        for(let i = 0; i < N; i++) {
+        let i = 0
+        while(i < N) {
             // Clear
             canvas.clear()
             bindings.messages.innerHTML = ''
@@ -176,7 +178,7 @@ const Main = (function() {
             canvas.line({ x: lineOffsetX, y: lineY }, { x: lineOffsetX + lineWidth, y: lineY }, { lineColor: 'rgba(0, 0, 255, 0.3)' })
 
             // Capture line
-            const lineDrawn = await captureLine(bindings, observables, onCancel)
+            let lineDrawn = await captureLine(bindings, observables, onCancel)
             if (!keepRunning) return;
 
             // Calculate error
@@ -189,14 +191,18 @@ const Main = (function() {
             }
 
             // Push and draw current attempt
-            attempts.push({
+            const attempt = {
                 referenceLine,
                 lineDrawn,
                 errorLines,
                 errorValues
-            })
-
+            }
+            if (maxErrorScore < 4 && (!errorValues || !errorValues.control || !errorValues.accuracy)) continue
+            if (maxErrorScore < 4 && getAttemptErrorScore(attempt, opts) > maxErrorScore) continue
+            attempts.push(attempt)
             drawAttempt(bindings, attempts[attempts.length - 1], opts)
+            i++
+            
         }
 
         // Summary

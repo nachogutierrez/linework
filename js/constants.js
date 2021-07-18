@@ -5,6 +5,7 @@ const Constants = {
         landscapeMode: false,
         M: 32,
         innerOffset: 24,
+        maxErrorScore: 3,
         starValues: {
             control: [6, 10, 14],
             accuracy: [1.0, 1.5, 2.0]
