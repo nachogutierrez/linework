@@ -6,10 +6,12 @@ const Main = (function() {
 
     let settings
     let settingsData = DEFAULT_SETTINGS
+    let clock
 
     async function start() {
         bindings = bind()
         settings = Settings(bindings.settingsModal)
+        clock = Clock(bindings.clock)
         observables = createObservables(bindings)
         setListeners(bindings, observables)
         drawingLoop(bindings, observables, settingsData, Notifier.subscribe(LABEL_CANCEL_DRAWING))
@@ -20,7 +22,8 @@ const Main = (function() {
             canvas: document.querySelector('canvas'),
             settingsButton: document.getElementById('settings-btn'),
             settingsModal: document.querySelector('.modal'),
-            messages: document.querySelector('.messages')
+            messages: document.querySelector('.messages'),
+            clock: document.querySelector('.clock')
         }
     }
 
@@ -70,12 +73,13 @@ const Main = (function() {
      * @param onCancel is a Notifier subscription function. it 
      *      helps make this Promise cancellable.
      */
-    function captureLine(bindings, observables, onCancel) {
+    function captureLine(bindings, observables, onCancel, onFirstPoint = ()=>{}) {
         return new Promise((resolve, reject) => {
             const canvas = Canvas(bindings.canvas)
             let points = []
             const sub = observables.line.subscribe(
                 e => {
+                    onFirstPoint()
                     if (e === 'EOL') {
                         sub.unsubscribe()
                         resolve(points)
@@ -136,6 +140,7 @@ const Main = (function() {
     async function drawingLoop(bindings, observables, opts = {}, onCancel) {
         const { N, M, innerOffset, shortLines, landscapeMode, maxErrorScore } = opts
         const { getAttemptErrorScore } = Draw
+        clock.reset()
 
         let keepRunning = true
         onCancel(() => {
@@ -178,7 +183,7 @@ const Main = (function() {
             canvas.line({ x: lineOffsetX, y: lineY }, { x: lineOffsetX + lineWidth, y: lineY }, { lineColor: 'rgba(0, 0, 255, 0.3)' })
 
             // Capture line
-            let lineDrawn = await captureLine(bindings, observables, onCancel)
+            let lineDrawn = await captureLine(bindings, observables, onCancel, () => clock.start())
             if (!keepRunning) return;
 
             // Calculate error
@@ -204,6 +209,8 @@ const Main = (function() {
             i++
             
         }
+
+        clock.stop()
 
         // Summary
         drawSummary(bindings, attempts, opts)

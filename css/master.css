@@ -1,3 +1,8 @@
+@font-face{
+    font-family:'digital-clock-font';
+    src: url('../assets/digital-dream/DIGITALDREAM.ttf');
+}
+
 html, body {
     margin: 0;
     padding: 0;
@@ -8,6 +13,14 @@ body {
     justify-content: center;
     background-color: #FBFAF5;
     font-family: 'Trebuchet MS', sans-serif;
+}
+
+.clock {
+    position: absolute;
+    top: 64px;
+    left: 64px;
+    font-family:'digital-clock-font';
+    font-size: 32px;
 }
 
 .button {
