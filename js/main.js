@@ -1,16 +1,11 @@
 const Main = (function() {
 
-    const CANVAS_WIDTH = 630
-    const CANVAS_HEIGHT = 891
+    const { DEFAULT_SETTINGS, CANVAS_WIDTH, CANVAS_HEIGHT } = Constants
 
     let bindings
     let observables
     let settings
-    let settingsData = {
-        N: 30,
-        shortLines: true,
-        landscapeMode: false
-    }
+    let settingsData = DEFAULT_SETTINGS
     let cancelListeners = []
 
     async function start() {
@@ -34,7 +29,7 @@ const Main = (function() {
         return {
             canvas: document.querySelector('canvas'),
             settings: document.getElementById('settings'),
-            settingsModal: document.getElementById('settings-modal'),
+            settingsModal: document.querySelector('.modal'),
             messages: document.querySelector('.messages')
         }
     }

@@ -9,13 +9,23 @@
 </head>
 <body>
     
-    <canvas width="630px" height="891px"></canvas>
+    <!-- Size of the canvas is determined programatically based on setting landscapeMode. -->
+    <canvas></canvas>
+
+    <!-- Settings gear icon -->
     <img id='settings' class='clickable unselectable' src='assets/gear.png' width='32px' height='32px'></img>
+
+    <!-- General purpose container for messages placed using position:absolute. -->
     <div class='messages'></div>
 
-    <div id="settings-modal"></div>
+    <!-- Settings modal root element. -->
+    <div class='modal'></div>
 
+    <!-- Libraries -->
     <script src="js/rxjs.js"></script>
+
+    <!-- Source code. -->
+    <script src="js/constants.js"></script>
     <script src="js/canvas.js"></script>
     <script src="js/settings.js"></script>
     <script src="js/main.js"></script>
