@@ -13,6 +13,7 @@ const Canvas = (function(canvasEl) {
     function line({ x:x1, y:y1 }, { x:x2, y:y2 }, opts = {}) {
         withOpts(opts, () => {
             ctx.beginPath()
+            ctx.lineCap = 'round'
             ctx.moveTo(x1, y1)
             ctx.lineTo(x2, y2)
             ctx.stroke()
@@ -30,10 +31,13 @@ const Canvas = (function(canvasEl) {
     }
 
     function getMousePosition(e) {
-        var rect = canvasEl.getBoundingClientRect();
+        const rect = canvasEl.getBoundingClientRect();
+        const scaleX = canvasEl.width / rect.width
+        const scaleY = canvasEl.height / rect.height
+
         return {
-          x: Math.min(Math.max(e.clientX - rect.left, 0), rect.width),
-          y: Math.min(Math.max(e.clientY - rect.top, 0), rect.height)
+          x: Math.min(Math.max((e.clientX - rect.left)*scaleX, 0), rect.width),
+          y: Math.min(Math.max((e.clientY - rect.top)*scaleY, 0), rect.height)
         };
     }
 
