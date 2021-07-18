@@ -1,21 +1,34 @@
 const Draw = (function() {
 
     const { calculateStats } = Calculate
+    const { STORAGE } = Constants
 
-    const isBronzeAttempt = attempt => attempt.errorValues.control <= 10 && attempt.errorValues.accuracy <= 2.0
-    const isSilverAttempt = attempt => attempt.errorValues.control <= 8 && attempt.errorValues.accuracy <= 1.5
-    const isGoldAttempt = attempt => attempt.errorValues.control <= 6 && attempt.errorValues.accuracy <= 1.0
+    const getErrorScore = (starValues, errorValue) => {
+        let i = starValues.findIndex(starValue => errorValue <= starValue)
+        if (i < 0) return starValues.length
+        else return i
+    }
+    const getAttemptErrorScore = (attempt, opts) => (
+        Math.max(
+            getErrorScore(opts.starValues.control, attempt.errorValues.control),
+            getErrorScore(opts.starValues.accuracy, attempt.errorValues.accuracy)
+        )
+    )
+
+    const isBronzeAttempt = (attempt, opts) => getAttemptErrorScore(attempt, opts) === 2
+    const isSilverAttempt = (attempt, opts) => getAttemptErrorScore(attempt, opts) === 1
+    const isGoldAttempt = (attempt, opts) => getAttemptErrorScore(attempt, opts) === 0
 
     /**
      * Maybe draws a star for this attempt, depending on the error values.
      */
-    function drawStar(bindings, attempt) {
+    function drawStar(bindings, attempt, opts) {
         let clazz = ''
-        if (isGoldAttempt(attempt)) {
+        if (isGoldAttempt(attempt, opts)) {
             clazz = 'gold-star'
-        } else if (isSilverAttempt(attempt)) {
+        } else if (isSilverAttempt(attempt, opts)) {
             clazz = 'silver-star'
-        } else if (isBronzeAttempt(attempt)) {
+        } else if (isBronzeAttempt(attempt, opts)) {
             clazz = 'bronze-star'
         }
 
@@ -23,12 +36,14 @@ const Draw = (function() {
             const rect = bindings.canvas.getBoundingClientRect()
             const { referenceLine } = attempt
             const { lineY } = referenceLine
-            const style = `left: ${rect.x - 32}px; top: ${rect.y + lineY}px; position: absolute;`
+            const style = `left: ${rect.x - 16}px; top: ${rect.y + lineY}px; position: absolute;`
             bindings.messages.innerHTML += `<img class='${clazz} unselectable' style='${style}'></img>`
         }
     }
 
     function drawAttempt(bindings, attempt, opts = {}) {
+        const { COLOR } = Constants
+        const { starValues } = opts
         const { referenceLine, lineDrawn } = attempt
         const { lineY, lineWidth, lineOffsetX } = referenceLine
         const canvas = Canvas(bindings.canvas)
@@ -58,10 +73,13 @@ const Draw = (function() {
         const style = `left: ${rect.x + bindings.canvas.width + 5}px; top: ${rect.y + lineY}px; transform: translateY(-50%); position: absolute;`
         if (attempt.errorValues) {
             const { control:controlError, accuracy:accuracyError } = attempt.errorValues
+            const colors = [COLOR.GOLD, COLOR.SILVER, COLOR.BRONZE, COLOR.BLACK]
+            const controlColor = colors[getErrorScore(starValues.control, controlError)]
+            const accuracyColor = colors[getErrorScore(starValues.accuracy, accuracyError)]
             const controlInfo = `<span><img class='unselectable' title='To keep this number low start as close to the starting point of the referece line as possible, and end your line as close to the ending point of the reference line as possible.' src='assets/info.png' width='16px' height='16px'></img></span>`
             const accuracyInfo = `<span><img class='unselectable' title='Keep your lines as close to the reference line as possible to keep this number low.' src='assets/info.png' width='16px' height='16px'></img></span>`
             bindings.messages.innerHTML += (
-                `<div class='unselectable' style='${style}'>control: ${controlError}${controlInfo}, accuracy: ${accuracyError.toFixed(2)}${accuracyInfo}</div>`
+                `<div class='unselectable' style='${style}'>control: <span style='color: ${controlColor}'>${controlError}</span>${controlInfo}, accuracy: <span style='color: ${accuracyColor}'>${accuracyError.toFixed(2)}</span>${accuracyInfo}</div>`
             )
         } else {
             bindings.messages.innerHTML += (
@@ -71,7 +89,7 @@ const Draw = (function() {
 
         // Star
         if (attempt.errorValues) {
-            drawStar(bindings, attempt)
+            drawStar(bindings, attempt, opts)
         }
     }
 
@@ -83,9 +101,9 @@ const Draw = (function() {
         const accuracyStats = calculateStats(validAttempts.map(a => a.errorValues.accuracy))
 
         // Stars count
-        const bronzeStars = validAttempts.filter(a => isBronzeAttempt(a) && !isSilverAttempt(a)).length
-        const silverStars = validAttempts.filter(a => isSilverAttempt(a) && !isGoldAttempt(a)).length
-        const goldStarsStars = validAttempts.filter(a => isGoldAttempt(a)).length
+        const bronzeStars = validAttempts.filter(a => isBronzeAttempt(a, opts) && !isSilverAttempt(a, opts)).length
+        const silverStars = validAttempts.filter(a => isSilverAttempt(a, opts) && !isGoldAttempt(a, opts)).length
+        const goldStarsStars = validAttempts.filter(a => isGoldAttempt(a, opts)).length
 
         const invalidLines = attempts.length - validAttempts.length
 
@@ -93,23 +111,27 @@ const Draw = (function() {
         let bestControlAvg = controlStats[1]
         // Flag to control whether the PB should be updated or not
         let newControlAvgBest = true
-        if (localStorage.getItem('bestControlAvg')) {
-            let parsed = parseFloat(localStorage.getItem('bestControlAvg'))
+        if (localStorage.getItem(STORAGE.BEST_CONTROL_AVG)) {
+            let parsed = parseFloat(localStorage.getItem(STORAGE.BEST_CONTROL_AVG))
             newControlAvgBest = controlStats[1] < parsed
             bestControlAvg = Math.min(parsed, bestControlAvg)
         }
-        localStorage.setItem('bestControlAvg', bestControlAvg)
+        if (!isNaN(bestControlAvg)) {
+            localStorage.setItem(STORAGE.BEST_CONTROL_AVG, bestControlAvg)
+        }
 
         // Assume current value is best, then compare with PB in storage
         let bestAccuracyAvg = accuracyStats[1]
         // Flag to control whether the PB should be updated or not
         let newAccuracyAvgBest = true
-        if (localStorage.getItem('bestAccuracyAvg')) {
-            let parsed = parseFloat(localStorage.getItem('bestAccuracyAvg'))
+        if (localStorage.getItem(STORAGE.BEST_ACCURACY_AVG)) {
+            let parsed = parseFloat(localStorage.getItem(STORAGE.BEST_ACCURACY_AVG))
             newAccuracyAvgBest = accuracyStats[1] < parsed
             bestAccuracyAvg = Math.min(parsed, bestAccuracyAvg)
         }
-        localStorage.setItem('bestAccuracyAvg', bestAccuracyAvg)
+        if (!isNaN(bestAccuracyAvg)) {
+            localStorage.setItem(STORAGE.BEST_ACCURACY_AVG, bestAccuracyAvg)
+        }
 
         let summary
         if (validAttempts.length > 0) {
@@ -137,7 +159,7 @@ const Draw = (function() {
         const rect = bindings.canvas.getBoundingClientRect()
         const style = `left: ${rect.x + bindings.canvas.width - 64}px; top: ${rect.y + bindings.canvas.height + 16}px; position: absolute;`
         bindings.messages.innerHTML += (
-            `<button class='retry-btn unselectable' style='${style}'>retry</button>`
+            `<div class='retry-btn unselectable button clickable' style='${style}'>retry</div>`
         )
         const retryButton = bindings.messages.querySelector('.retry-btn')
         retryButton.addEventListener('click', () => {

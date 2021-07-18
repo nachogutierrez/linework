@@ -6,31 +6,44 @@ html, body {
 body {
     display: flex;
     justify-content: center;
+    background-color: #FBFAF5;
+    font-family: 'Trebuchet MS', sans-serif;
 }
 
-canvas {
-    background-color: #d0ccc3;
+.button {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid black;
+    display: inline-block;
+}
+
+.warning {
+    background-color: #eed202;
+}
+
+.paper {
+    background-color: #f2eecb;
 }
 
 .gold-star {
     width: 24px;
     height: 24px;
     content: url('../assets/gold_star.png');
-    transform: translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
 }
 
 .silver-star {
     width: 20px;
     height: 20px;
     content: url('../assets/silver_star.png');
-    transform: translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
 }
 
 .bronze-star {
     width: 16px;
     height: 16px;
     content: url('../assets/bronze_star.png');
-    transform: translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
 }
 
 .unselectable {

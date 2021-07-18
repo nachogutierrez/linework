@@ -27,7 +27,7 @@ const Main = (function() {
     function setListeners(bindings, observables) {
         bindings.settingsButton.addEventListener('click', () => {
             settings.open(settingsData, newSettingsData => {
-                settingsData = newSettingsData
+                settingsData = { ...settingsData, ...newSettingsData }
                 Notifier.notify(LABEL_CANCEL_DRAWING)
                 drawingLoop(bindings, observables, settingsData, Notifier.subscribe(LABEL_CANCEL_DRAWING))
             })
@@ -166,7 +166,7 @@ const Main = (function() {
 
             // Draw past attempts
             for (let j = 0; j < attempts.length; j++) {
-                drawAttempt(bindings, attempts[j])
+                drawAttempt(bindings, attempts[j], opts)
             }
 
             // Draw current reference line
@@ -196,11 +196,11 @@ const Main = (function() {
                 errorValues
             })
 
-            drawAttempt(bindings, attempts[attempts.length - 1])
+            drawAttempt(bindings, attempts[attempts.length - 1], opts)
         }
 
         // Summary
-        drawSummary(bindings, attempts)
+        drawSummary(bindings, attempts, opts)
 
         // Retry button
         drawRetryButton(drawingLoop, bindings, observables, opts, onCancel)
