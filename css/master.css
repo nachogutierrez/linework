@@ -25,6 +25,10 @@ body {
     background-color: #f2eecb;
 }
 
+.paper:hover {
+    cursor: url('../assets/cursor.cur'), auto;
+}
+
 .gold-star {
     width: 24px;
     height: 24px;
