@@ -182,7 +182,7 @@ const Main = (function() {
             bestControlAvg = Math.min(parsed, bestControlAvg)
         }
         localStorage.setItem('bestControlAvg', bestControlAvg)
-        
+
         let bestAccuracyAvg = accuracyStats[1]
         let newAccuracyAvgBest = true
         if (localStorage.getItem('bestAccuracyAvg')) {
@@ -195,7 +195,7 @@ const Main = (function() {
         let summary
         if (validAttempts.length > 0) {
             summary = [
-                `Control error. min: <b>${controlStats[0]}</b>, avg: <b>${controlStats[1].toFixed(2)}</b>, max: <b>${controlStats[2]}</b>, best avg: <b>${bestControlAvg}</b>${newAccuracyAvgBest?'(New best!)':''}`,
+                `Control error. min: <b>${controlStats[0]}</b>, avg: <b>${controlStats[1].toFixed(2)}</b>, max: <b>${controlStats[2]}</b>, best avg: <b>${bestControlAvg.toFixed(2)}</b>${newAccuracyAvgBest?'(New best!)':''}`,
                 `Accuracy error. min: <b>${accuracyStats[0].toFixed(2)}</b>, avg: <b>${accuracyStats[1].toFixed(2)}</b>, max: <b>${accuracyStats[2].toFixed(2)}</b>, best avg: <b>${bestAccuracyAvg.toFixed(2)}</b>${newAccuracyAvgBest?'(New best!)':''}`,
                 `Stars. bronze: <b>${bronzeStars}</b>, silver: <b>${silverStars}</b>, gold: <b>${goldStarsStars}</b>`,
                 `Invalid lines: <b>${invalidLines}</b>`
