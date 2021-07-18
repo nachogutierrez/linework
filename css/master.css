@@ -1,0 +1,78 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+}
+
+canvas {
+    background-color: #d0ccc3;
+}
+
+#settings-modal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gold-star {
+    width: 24px;
+    height: 24px;
+    content: url('../assets/gold_star.png');
+    transform: translateY(-50%);
+}
+
+.silver-star {
+    width: 20px;
+    height: 20px;
+    content: url('../assets/silver_star.png');
+    transform: translateY(-50%);
+}
+
+.bronze-star {
+    width: 16px;
+    height: 16px;
+    content: url('../assets/bronze_star.png');
+    transform: translateY(-50%);
+}
+
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clickable:hover {
+    opacity: 0.75;
+}
+
+.translucent {
+    background: rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100%;
+    pointer-events: all;
+    position: absolute;
+}
+
+.modal-content {
+    background: #F9FBFF;
+    border-radius: 8px;
+    width: 512px;
+    padding: 24px;
+    position: absolute;
+    pointer-events: all;
+}
