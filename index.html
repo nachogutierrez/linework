@@ -25,6 +25,28 @@
     <!-- Clock :) -->
     <div class="clock"></div>
 
+    <!-- Analytics -->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-analytics.js"></script>
+
+    <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+        apiKey: "AIzaSyD0xKlrU2_7WLGAab5pDsqgsgL0_vgXDUo",
+        authDomain: "linework-51529.firebaseapp.com",
+        projectId: "linework-51529",
+        storageBucket: "linework-51529.appspot.com",
+        messagingSenderId: "749977374261",
+        appId: "1:749977374261:web:6999c3d3073a03d818eb7c",
+        measurementId: "G-HLNMRJMH6E"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    </script>
+
     <!-- Libraries -->
     <script src="js/rxjs.js"></script>
 
